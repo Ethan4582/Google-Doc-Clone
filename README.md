@@ -33,7 +33,7 @@ This application implements a real-time collaborative document editing platform 
 
 ## Demo
 
-<video controls src="Untitled video - Made with Clipchamp (2).mp4" title="Title"></video>
+https://github.com/user-attachments/assets/2944abc4-88f1-499d-94b8-2f7d03943183
 
 
 <details>
