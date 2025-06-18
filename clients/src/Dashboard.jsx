@@ -1,35 +1,63 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+async function isBackendAvailable() {
+  try {
+    const res = await fetch("https://google-doc-clone-backend-2ap8.onrender.com/api/health", { cache: "no-store" });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
 export default function Dashboard() {
   const [docs, setDocs] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-   
-    fetch("http://localhost:3002/api/documents")
-      .then((res) => {
-        if (!res.ok) throw new Error("DB not available");
-        return res.json();
-      })
-      .then((data) => {
-       
-        setDocs(data.map((doc) => doc._id));
-        localStorage.setItem("docs", JSON.stringify(data.map((doc) => doc._id)));
-      })
-      .catch(() => {
-     
+    let isMounted = true;
+
+    const checkBackend = async () => {
+      const available = await isBackendAvailable();
+
+      if (!available) {
+        // If the backend is not available, try to load from localStorage
         const stored = JSON.parse(localStorage.getItem("docs") || "[]");
-        setDocs(stored);
-      });
+        if (isMounted) setDocs(stored);
+      } else {
+        // If the backend is available, fetch the documents
+        fetch("http://localhost:3002/api/documents")
+          .then((res) => {
+            if (!res.ok) throw new Error("DB not available");
+            return res.json();
+          })
+          .then((data) => {
+            if (isMounted) {
+              setDocs(data.map((doc) => doc._id));
+              localStorage.setItem("docs", JSON.stringify(data.map((doc) => doc._id)));
+            }
+          })
+          .catch(() => {
+            if (isMounted) {
+              const stored = JSON.parse(localStorage.getItem("docs") || "[]");
+              setDocs(stored);
+            }
+          });
+      }
+    };
+
+    checkBackend();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleDelete = (docId) => {
-
     const updatedDocs = docs.filter((id) => id !== docId);
     setDocs(updatedDocs);
     localStorage.setItem("docs", JSON.stringify(updatedDocs));
-   
+
     fetch(`http://localhost:3002/api/document/${docId}`, { method: "DELETE" });
   };
 

@@ -131,7 +131,7 @@ export default function TextEditor() {
             fontSize: "1.3em",
           }}
         >
-          Google Docs Clone
+          Docs 
         </h2>
         <div>
           <button

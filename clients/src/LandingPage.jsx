@@ -1,6 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidV4 } from "uuid";
 
+async function isBackendAvailable() {
+  try {
+    const res = await fetch("https://google-doc-clone-backend-2ap8.onrender.com/api/health", { cache: "no-store" });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
 export default function LandingPage() {
   const navigate = useNavigate();
 
@@ -49,7 +58,7 @@ export default function LandingPage() {
           style={{ width: 64, marginBottom: 24 }}
         />
         <h1 style={{ fontWeight: 700, fontSize: "2.5em", color: "#2563eb", marginBottom: 8 }}>
-          Google Docs Clone
+          Docs 
         </h1>
         <p style={{ color: "#64748b", marginBottom: 32, fontSize: "1.1em" }}>
           Create and share collaborative documents in real time.
