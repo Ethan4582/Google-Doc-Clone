@@ -6,16 +6,30 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("docs") || "[]");
-    setDocs(stored);
+   
+    fetch("http://localhost:3002/api/documents")
+      .then((res) => {
+        if (!res.ok) throw new Error("DB not available");
+        return res.json();
+      })
+      .then((data) => {
+       
+        setDocs(data.map((doc) => doc._id));
+        localStorage.setItem("docs", JSON.stringify(data.map((doc) => doc._id)));
+      })
+      .catch(() => {
+     
+        const stored = JSON.parse(localStorage.getItem("docs") || "[]");
+        setDocs(stored);
+      });
   }, []);
 
   const handleDelete = (docId) => {
-   
+
     const updatedDocs = docs.filter((id) => id !== docId);
     setDocs(updatedDocs);
     localStorage.setItem("docs", JSON.stringify(updatedDocs));
- 
+   
     fetch(`http://localhost:3002/api/document/${docId}`, { method: "DELETE" });
   };
 
@@ -27,7 +41,7 @@ export default function Dashboard() {
       <div style={{ maxWidth: 700, margin: "2em auto" }}>
         {docs.length === 0 && <div>No documents yet.</div>}
         <ul style={{ listStyle: "none", padding: 0 }}>
-          {docs.map(doc => (
+          {docs.map((doc) => (
             <li key={doc} style={{ background: "#fff", marginBottom: 16, padding: 20, borderRadius: 8, boxShadow: "0 2px 8px #0001", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span>Document: {doc}</span>
               <div>
