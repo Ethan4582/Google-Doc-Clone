@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import { io } from "socket.io-client";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 
 const SAVE_INTERVAL_MS = 2000;
 const TOOLBAR_OPTIONS = [
@@ -20,6 +20,7 @@ const TOOLBAR_OPTIONS = [
 export default function TextEditor() {
   const { id: documentId } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const [socket, setSocket] = useState();
   const [quill, setQuill] = useState();
 
@@ -77,20 +78,23 @@ export default function TextEditor() {
     };
   }, [socket, quill]);
 
-  const wrapperRef = useCallback((wrapper) => {
-    if (wrapper == null) return;
+  const wrapperRef = useCallback(
+    (wrapper) => {
+      if (wrapper == null) return;
 
-    wrapper.innerHTML = "";
-    const editor = document.createElement("div");
-    wrapper.append(editor);
-    const q = new Quill(editor, {
-      theme: "snow",
-      modules: { toolbar: TOOLBAR_OPTIONS },
-    });
-    q.disable();
-    q.setText("Loading...");
-    setQuill(q);
-  }, []);
+      wrapper.innerHTML = "";
+      const editor = document.createElement("div");
+      wrapper.append(editor);
+      const q = new Quill(editor, {
+        theme: "snow",
+        modules: { toolbar: TOOLBAR_OPTIONS },
+      });
+      q.disable();
+      q.setText("Loading...");
+      setQuill(q);
+    },
+    []
+  );
 
   const handleShare = () => {
     const url = window.location.origin + location.pathname;
@@ -98,12 +102,84 @@ export default function TextEditor() {
     alert("Document link copied to clipboard!");
   };
 
+  // Ensure doc is in localStorage
+  useEffect(() => {
+    const docs = JSON.parse(localStorage.getItem("docs") || "[]");
+    if (!docs.includes(documentId)) {
+      docs.push(documentId);
+      localStorage.setItem("docs", JSON.stringify(docs));
+    }
+  }, [documentId]);
+
   return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "flex-end", margin: "1em" }}>
-        <button onClick={handleShare}>Share</button>
+    <div style={{ minHeight: "100vh", background: "#f1f5f9" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "1.5em 2em",
+          background: "#2563eb",
+          color: "#fff",
+          boxShadow: "0 2px 8px #0002",
+        }}
+      >
+        <h2
+          style={{
+            margin: 0,
+            fontWeight: 700,
+            fontSize: "1.3em",
+          }}
+        >
+          Google Docs Clone
+        </h2>
+        <div>
+          <button
+            onClick={() => navigate("/dashboard")}
+            style={{
+              background: "#fff",
+              color: "#2563eb",
+              border: "none",
+              borderRadius: 6,
+              padding: "0.5em 1.2em",
+              fontWeight: 600,
+              cursor: "pointer",
+              boxShadow: "0 1px 4px #0001",
+              marginRight: 12,
+            }}
+          >
+            Dashboard
+          </button>
+          <button
+            onClick={handleShare}
+            style={{
+              background: "#fff",
+              color: "#2563eb",
+              border: "none",
+              borderRadius: 6,
+              padding: "0.5em 1.2em",
+              fontWeight: 600,
+              cursor: "pointer",
+              boxShadow: "0 1px 4px #0001",
+            }}
+          >
+            Share
+          </button>
+        </div>
       </div>
-      <div className="container" ref={wrapperRef}></div>
+      <div
+        className="container"
+        ref={wrapperRef}
+        style={{
+          background: "#fff",
+          margin: "2em auto",
+          borderRadius: 12,
+          boxShadow: "0 2px 16px #0001",
+          maxWidth: 900,
+          minHeight: 500,
+          padding: 24,
+        }}
+      ></div>
     </div>
   );
 }

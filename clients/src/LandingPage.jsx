@@ -5,7 +5,14 @@ export default function LandingPage() {
   const navigate = useNavigate();
 
   const handleNewDoc = () => {
-    navigate(`/document/${uuidV4()}`);
+    const id = uuidV4();
+    // Save to localStorage
+    const docs = JSON.parse(localStorage.getItem("docs") || "[]");
+    if (!docs.includes(id)) {
+      docs.push(id);
+      localStorage.setItem("docs", JSON.stringify(docs));
+    }
+    navigate(`/document/${id}`);
   };
 
   return (
