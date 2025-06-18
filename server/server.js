@@ -7,17 +7,16 @@ const cors = require("cors");
 const { Server } = require("socket.io");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
-const xss = require("xss-clean");
+const xss = require("xss"); 
 
 const app = express();
 
-// Security middlewares
+
 app.use(helmet());
-app.use(xss());
 app.use(
   rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
+    windowMs: 15 * 60 * 1000,
+    max: 100,
     message: "Too many requests from this IP, please try again later.",
   })
 );
@@ -25,13 +24,11 @@ app.use(
 app.use(cors({ origin: "http://localhost:5173" }));
 app.use(express.json());
 
+// Clean connection config (no deprecated options)
 mongoose
-  .connect(process.env.MONGO_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(process.env.MONGO_URL)
   .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.error(" MongoDB connection error:", err));
+  .catch((err) => console.error("MongoDB connection error:", err));
 
 const io = new Server(3001, {
   cors: {
@@ -44,22 +41,22 @@ io.on("connection", (socket) => {
   console.log("Client connected");
 
   socket.on("get-document", async (documentId) => {
-    const document = await findOrCreateDocument(documentId);
-    socket.join(documentId);
+    const cleanId = xss(documentId); // sanitize input
+    const document = await findOrCreateDocument(cleanId);
+    socket.join(cleanId);
     socket.emit("load-document", document.data);
 
     socket.on("send-changes", (delta) => {
-      socket.broadcast.to(documentId).emit("receive-changes", delta);
+      socket.broadcast.to(cleanId).emit("receive-changes", delta);
     });
 
     socket.on("save-document", async (data) => {
-      await Document.findByIdAndUpdate(documentId, { data });
+      await Document.findByIdAndUpdate(cleanId, { data });
     });
   });
 });
 
 app.listen(3002, () => console.log("REST API running on 3002"));
-
 
 async function findOrCreateDocument(id) {
   if (id == null) return;
@@ -68,7 +65,9 @@ async function findOrCreateDocument(id) {
   return await Document.create({ _id: id, data: {} });
 }
 
+// Example REST route with input sanitation
 app.delete("/api/document/:id", async (req, res) => {
-  await Document.findByIdAndDelete(req.params.id);
+  const cleanId = xss(req.params.id);
+  await Document.findByIdAndDelete(cleanId);
   res.json({ success: true });
 });
