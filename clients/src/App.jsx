@@ -1,15 +1,12 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { v4 as uuidV4 } from 'uuid';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Texteditor from './Texteditor';
+import LandingPage from './LandingPage';
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route
-          path="/"
-          element={<Navigate to={`/document/${uuidV4()}`} replace />}
-        />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/document/:id" element={<Texteditor />} />
       </Routes>
     </Router>  

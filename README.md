@@ -27,13 +27,11 @@ This application implements a real-time collaborative document editing platform 
 
 ## Project Visualization
 
-[View on Eraser![](https://app.eraser.io/workspace/zA39QLojQ0sSV6NcQTZJ/preview?elements=_oQOv6VH0t0wjQInKd1VTg&type=embed)](https://app.eraser.io/workspace/zA39QLojQ0sSV6NcQTZJ?elements=_oQOv6VH0t0wjQInKd1VTg)
+[View on Eraser![](https://app.eraser.io/workspace/zA39QLojQ0sSV6NcQTZJ/preview?elements=_oQOv6VH0t0wjQInKd1VTg&type=embed)]()
 
 *The architecture diagram illustrates the data flow between client components, server services, and database interactions.*
 
 ## Demo
-
-<video controls src="Untitled video - Made with Clipchamp (2).mp4" title="Title"></video>
 
 
 <details>

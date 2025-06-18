@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import { io } from "socket.io-client";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 
 const SAVE_INTERVAL_MS = 2000;
 const TOOLBAR_OPTIONS = [
@@ -19,6 +19,7 @@ const TOOLBAR_OPTIONS = [
 
 export default function TextEditor() {
   const { id: documentId } = useParams();
+  const location = useLocation();
   const [socket, setSocket] = useState();
   const [quill, setQuill] = useState();
 
@@ -91,5 +92,18 @@ export default function TextEditor() {
     setQuill(q);
   }, []);
 
-  return <div className="container" ref={wrapperRef}></div>;
+  const handleShare = () => {
+    const url = window.location.origin + location.pathname;
+    navigator.clipboard.writeText(url);
+    alert("Document link copied to clipboard!");
+  };
+
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "flex-end", margin: "1em" }}>
+        <button onClick={handleShare}>Share</button>
+      </div>
+      <div className="container" ref={wrapperRef}></div>
+    </div>
+  );
 }
