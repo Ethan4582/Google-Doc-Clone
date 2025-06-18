@@ -33,16 +33,11 @@ This application implements a real-time collaborative document editing platform 
 
 ## Demo
 
+<<<<<<< HEAD
+=======
+https://github.com/user-attachments/assets/2944abc4-88f1-499d-94b8-2f7d03943183
 
-<details>
-  <summary>📹 Video Walkthrough Features</summary>
-  
-  - Creating a new document
-  - Real-time editing demonstration with multiple users
-  - Rich text formatting capabilities
-  - Document persistence demonstration
-  - Collaboration features in action
-</details>
+>>>>>>> 8a6d32d3edb3669862873e7036d89b69dfbd5948
 
 ## Installation and Configuration
 
