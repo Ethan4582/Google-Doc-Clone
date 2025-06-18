@@ -4,9 +4,15 @@ import { v4 as uuidV4 } from "uuid";
 export default function LandingPage() {
   const navigate = useNavigate();
 
-  const handleNewDoc = () => {
+  const handleNewDoc = async () => {
     const id = uuidV4();
-    // Save to localStorage
+
+    try {
+      await fetch("http://localhost:3002/api/document/" + id, { method: "POST" });
+    } catch {
+      
+    }
+  
     const docs = JSON.parse(localStorage.getItem("docs") || "[]");
     if (!docs.includes(id)) {
       docs.push(id);
