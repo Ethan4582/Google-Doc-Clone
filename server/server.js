@@ -21,7 +21,16 @@ app.use(
   })
 );
 
-app.use(cors({ origin: "http://localhost:5173" }));
+const allowedOrigins = [
+  "https://google-doc-frontend-3z2r.onrender.com"
+];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true, // if you ever use cookies/auth
+  })
+);
 app.use(express.json());
 
 // Clean connection config (no deprecated options)
@@ -32,9 +41,10 @@ mongoose
 
 const io = new Server(3001, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: "https://google-doc-frontend-3z2r.onrender.com",
     methods: ["GET", "POST"],
-  },
+    credentials: true
+  }
 });
 
 io.on("connection", (socket) => {
